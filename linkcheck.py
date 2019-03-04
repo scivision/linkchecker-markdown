@@ -2,6 +2,10 @@
 """
 check links in Markdown files (as used for Static site generation)
 I noted linkchecker program doesn't catch GitHub 404 for example.
+
+python linkcheck.py ~/myHugosite/content
+
+python linkcheck.py ~/myJekyllsite/_posts
 """
 import requests
 import re
@@ -28,12 +32,12 @@ def main():
     p = p.parse_args()
 
     if p.domain:
-        pat = f"https?://{p.domain}[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+"
+        pat = f"https?://{p.domain}" + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+"
     else:
-        pat = "https?://[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+"
+        pat = r"https?://[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+"
 
     if p.ext == ".md":
-        pat = f"\({pat}\)"
+        pat = r"\(" + pat + r"\)"
 
     path = Path(p.path).expanduser()
 

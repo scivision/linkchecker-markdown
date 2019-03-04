@@ -1,7 +1,12 @@
-# linkchecker-markdown
+
+[![Build Status](https://travis-ci.com/scivision/linkchecker-markdown.svg?branch=master)](https://travis-ci.com/scivision/linkchecker-markdown)
+
+# Linkchecker for Markdown-based static generated sites
+
 Python Requests-based simple check of links in Markdown .md files only.
 I got frustrated with all the false positives and moreso the false negatives from LinkChecker.py, which is also very slow and only works with HTML.
-I have large Markdown-based Jekyll sites, and I wanted something that would run very fast, be simple, and reliable.
+This tool is very helpful for large Markdown-based Jekyll and Hugo sites.
+It is very fast and simple.
 
 Alternatives exist for Go and JavaScript.
 
@@ -10,8 +15,13 @@ Alternatives exist for Go and JavaScript.
 pip install -e .
 ```
 
-## Usage
-Assuming the Markdown files for your website are in `~/web/_posts`:
-```sh
-python linkcheck.py ~/web/_posts
-```
+## Examples
+
+* Jekyll
+  ```sh
+  python linkcheck.py ~/web/_posts
+  ```
+* Hugo
+  ```sh
+  python linkcheckpy ~/web/content
+  ```

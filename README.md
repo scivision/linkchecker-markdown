@@ -8,6 +8,10 @@ I got frustrated with all the false positives and moreso the false negatives fro
 This tool is very helpful for large Markdown-based Jekyll and Hugo sites.
 It is very fast and simple.
 
+HOWEVER: we have found that as time goes on, more and more servers have strict anti-leeching methods that break this program too.
+The solution may be to use an asyncio-based web browser interface like Arsenic in this program.
+We hope to do so as time/interest permit.
+
 Alternatives exist for Go and JavaScript.
 
 ## install

@@ -8,7 +8,9 @@ import asyncio
 import urllib3
 from . import TIMEOUT
 
-EXC = (asyncio.TimeoutError, aiohttp.client_exceptions.ClientConnectorError)
+# multiple exceptions must be tuples, not lists in general
+OKE = (asyncio.TimeoutError,)  # FIXME: until full browswer like Arsenic implemented
+EXC = (aiohttp.client_exceptions.ClientConnectorError, aiohttp.client_exceptions.ServerDisconnectedError)
 
 
 def main(flist: Sequence[Path], pat: str, ext: str = '.md',
@@ -16,7 +18,12 @@ def main(flist: Sequence[Path], pat: str, ext: str = '.md',
 
     glob = re.compile(pat)
 
-    asyncio.run(arbiter(flist, glob, ext, hdr, verbose))
+    if hasattr(asyncio, 'run'):  # python >= 3.7
+        asyncio.run(arbiter(flist, glob, ext, hdr, verbose))
+    else:
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(arbiter(flist, glob, ext, hdr, verbose))
+        loop.close()
 
 
 async def arbiter(flist, glob, ext: str,
@@ -26,7 +33,7 @@ async def arbiter(flist, glob, ext: str,
 
     warnings.simplefilter("ignore", urllib3.exceptions.InsecureRequestWarning)
 
-    asyncio.run(await asyncio.gather(*tasks))
+    await asyncio.gather(*tasks)
 
     warnings.resetwarnings()
 
@@ -36,13 +43,15 @@ async def check_url(fn: Path, glob, ext: str,
                     verbose: bool = False) -> List[Tuple[str, str, Any]]:
     urls = glob.findall(fn.read_text())
 
-    bad: List[Tuple[str, str, Any]] = []
+    bad = []  # type: List[Tuple[str, str, Any]]
 
     for url in urls:
         if ext == ".md":
             url = url[1:-1]
         try:
             R = await requests.get(url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify_ssl=False)
+        except OKE:
+            continue
         except EXC as e:
             bad += [(fn.name, url, e)]  # e, not str(e)
             print('\n', bad[-1])
@@ -54,6 +63,6 @@ async def check_url(fn: Path, glob, ext: str,
             print('\n', bad[-1])
         else:
             if verbose:
-                print(f'OK: {url:80s}', end='\r')
+                print('OK: {:80s}'.format(url), end='\r')
 
     return bad

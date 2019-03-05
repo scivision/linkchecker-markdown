@@ -22,7 +22,7 @@ def main():
     p = p.parse_args()
 
     if p.domain:
-        pat = f"https?://{p.domain}" + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+"
+        pat = "https?://" + p.domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+"
     else:
         pat = r"https?://[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+"
 
@@ -32,7 +32,7 @@ def main():
     path = Path(p.path).expanduser()
 
     if path.is_dir():
-        flist = path.glob(f"*{p.ext}")
+        flist = path.glob("*" + p.ext)
     elif path.is_file():
         flist = [path]
     else:

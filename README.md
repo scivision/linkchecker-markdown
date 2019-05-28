@@ -22,10 +22,12 @@ pip install -e .
 ## Examples
 
 * Jekyll
-  ```sh
-  python linkcheck.py ~/web/_posts
-  ```
+
+    ```sh
+    python linkcheck.py ~/web/_posts
+    ```
 * Hugo
-  ```sh
-  python linkcheckpy ~/web/content
-  ```
+
+    ```sh
+    python linkcheck.py ~/web/content
+    ```

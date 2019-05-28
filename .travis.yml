@@ -13,5 +13,5 @@ install: pip install -e .[tests,cov]
 
 script:
 - flake8
-- mypy . --ignore-missing-imports
+- mypy .
 

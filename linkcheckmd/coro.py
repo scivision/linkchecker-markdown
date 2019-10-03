@@ -1,7 +1,7 @@
 from aiohttp_requests import requests
 import aiohttp
 import re
-from typing import Sequence, Dict, List, Tuple, Any
+import typing
 from pathlib import Path
 import warnings
 import asyncio
@@ -13,21 +13,9 @@ OKE = (asyncio.TimeoutError,)  # FIXME: until full browswer like Arsenic impleme
 EXC = (aiohttp.client_exceptions.ClientConnectorError, aiohttp.client_exceptions.ServerDisconnectedError)
 
 
-def main(flist: Sequence[Path], pat: str, ext: str = '.md',
-         hdr: Dict[str, str] = None, verbose: bool = False):
+async def check_pages(flist: typing.Iterator[Path], pat: str, ext: str, hdr: typing.Dict[str, str] = None, verbose: bool = False):
 
     glob = re.compile(pat)
-
-    if hasattr(asyncio, 'run'):  # python >= 3.7
-        asyncio.run(arbiter(flist, glob, ext, hdr, verbose))
-    else:
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(arbiter(flist, glob, ext, hdr, verbose))
-        loop.close()
-
-
-async def arbiter(flist, glob, ext: str,
-                  hdr: Dict[str, str] = None, verbose: bool = False):
 
     tasks = [check_url(fn, glob, ext, hdr, verbose) for fn in flist]
 
@@ -38,12 +26,13 @@ async def arbiter(flist, glob, ext: str,
     warnings.resetwarnings()
 
 
-async def check_url(fn: Path, glob, ext: str,
-                    hdr: Dict[str, str] = None,
-                    verbose: bool = False) -> List[Tuple[str, str, Any]]:
-    urls = glob.findall(fn.read_text())
+async def check_url(
+    fn: Path, glob, ext: str, hdr: typing.Dict[str, str] = None, verbose: bool = False
+) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
-    bad = []  # type: List[Tuple[str, str, Any]]
+    urls = glob.findall(fn.read_text(errors="ignore"))
+
+    bad = []  # type: typing.List[typing.Tuple[str, str, typing.Any]]
 
     for url in urls:
         if ext == ".md":
@@ -54,15 +43,15 @@ async def check_url(fn: Path, glob, ext: str,
             continue
         except EXC as e:
             bad += [(fn.name, url, e)]  # e, not str(e)
-            print('\n', bad[-1])
+            print("\n", bad[-1])
             continue
 
         code = R.status
         if code != 200:
             bad += [(fn.name, url, code)]
-            print('\n', bad[-1])
+            print("\n", bad[-1])
         else:
             if verbose:
-                print('OK: {:80s}'.format(url), end='\r')
+                print("OK: {:80s}".format(url), end="\r")
 
     return bad

@@ -11,9 +11,9 @@ synchronous routines
 """
 
 
-def check_urls(flist: Sequence[Path], pat: str, ext: str = '.md',
-               hdr: Dict[str, str] = None,
-               verifycert: bool = False, verbose: bool = False) -> List[Tuple[str, str, Any]]:
+def check_urls(
+    flist: Sequence[Path], pat: str, ext: str = ".md", hdr: Dict[str, str] = None, verifycert: bool = False, verbose: bool = False
+) -> List[Tuple[str, str, Any]]:
 
     glob = re.compile(pat)
 
@@ -23,7 +23,7 @@ def check_urls(flist: Sequence[Path], pat: str, ext: str = '.md',
         if hdr:
             sess.headers.update(hdr)
             sess.max_redirects = 5
-# %% loop
+        # %% loop
         bad: List[Tuple[str, str, Any]] = []
 
         for fn in flist:
@@ -33,9 +33,11 @@ def check_urls(flist: Sequence[Path], pat: str, ext: str = '.md',
     return bad
 
 
-def check_url(fn: Path, glob, ext: str, sess, hdr: Dict[str, str] = None,
-              verifycert: bool = False, verbose: bool = False) -> List[Tuple[str, str, Any]]:
-    urls = glob.findall(fn.read_text())
+def check_url(
+    fn: Path, glob, ext: str, sess, hdr: Dict[str, str] = None, verifycert: bool = False, verbose: bool = False
+) -> List[Tuple[str, str, Any]]:
+
+    urls = glob.findall(fn.read_text(errors="ignore"))
 
     bad: List[Tuple[str, str, Any]] = []
 
@@ -49,7 +51,7 @@ def check_url(fn: Path, glob, ext: str, sess, hdr: Dict[str, str] = None,
                     continue
                 else:
                     bad += [(fn.name, url, R.status_code)]
-                    print('\n', bad[-1])
+                    print("\n", bad[-1])
                     continue
         except OKE:
             continue
@@ -57,16 +59,16 @@ def check_url(fn: Path, glob, ext: str, sess, hdr: Dict[str, str] = None,
             if retry(url, hdr, verifycert):
                 continue
             bad += [(fn.name, url, str(e))]
-            print('\n', bad[-1])
+            print("\n", bad[-1])
             continue
 
         code = R.status_code
         if code != 200:
             bad += [(fn.name, url, code)]
-            print('\n', bad[-1])
+            print("\n", bad[-1])
         else:
             if verbose:
-                print(f'OK: {url:80s}', end='\r')
+                print(f"OK: {url:80s}", end="\r")
 
     return bad
 

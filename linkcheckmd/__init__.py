@@ -1,7 +1,2 @@
 import requests
-
-# tuples, not lists
-EXC = (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError)
-OKE = requests.exceptions.TooManyRedirects
-RETRYCODES = (400, 404, 405, 503)
-TIMEOUT = 10
+from .base import run_check

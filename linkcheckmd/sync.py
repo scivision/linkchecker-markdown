@@ -1,10 +1,15 @@
 import requests
 import re
-from typing import Sequence, Dict, List, Tuple, Any
+import typing
 from pathlib import Path
 import warnings
 import urllib3
-from . import OKE, EXC, TIMEOUT, RETRYCODES
+
+TIMEOUT = 10
+RETRYCODES = (400, 404, 405, 503)
+# multiple exceptions must be tuples, not lists in general
+OKE = requests.exceptions.TooManyRedirects  # FIXME: until full browswer like Arsenic implemented
+EXC = (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError)
 
 """
 synchronous routines
@@ -12,8 +17,13 @@ synchronous routines
 
 
 def check_urls(
-    flist: Sequence[Path], pat: str, ext: str = ".md", hdr: Dict[str, str] = None, verifycert: bool = False, verbose: bool = False
-) -> List[Tuple[str, str, Any]]:
+    flist: typing.Iterable[Path],
+    pat: str,
+    ext: str = ".md",
+    hdr: typing.Dict[str, str] = None,
+    verifycert: bool = False,
+    verbose: bool = False,
+) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     glob = re.compile(pat)
 
@@ -24,7 +34,7 @@ def check_urls(
             sess.headers.update(hdr)
             sess.max_redirects = 5
         # %% loop
-        bad: List[Tuple[str, str, Any]] = []
+        bad: typing.List[typing.Tuple[str, str, typing.Any]] = []
 
         for fn in flist:
             bad.extend(check_url(fn, glob, ext, sess, hdr, verifycert, verbose))
@@ -34,12 +44,12 @@ def check_urls(
 
 
 def check_url(
-    fn: Path, glob, ext: str, sess, hdr: Dict[str, str] = None, verifycert: bool = False, verbose: bool = False
-) -> List[Tuple[str, str, Any]]:
+    fn: Path, glob, ext: str, sess, hdr: typing.Dict[str, str] = None, verifycert: bool = False, verbose: bool = False
+) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
 
-    bad: List[Tuple[str, str, Any]] = []
+    bad: typing.List[typing.Tuple[str, str, typing.Any]] = []
 
     for url in urls:
         if ext == ".md":
@@ -73,7 +83,7 @@ def check_url(
     return bad
 
 
-def retry(url: str, hdr: Dict[str, str] = None, verifycert: bool = False) -> bool:
+def retry(url: str, hdr: typing.Dict[str, str] = None, verifycert: bool = False) -> bool:
     ok = False
 
     try:

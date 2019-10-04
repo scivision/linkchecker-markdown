@@ -5,25 +5,29 @@ import typing
 from pathlib import Path
 import warnings
 import asyncio
-import urllib3
-from . import TIMEOUT
+import itertools
 
-# multiple exceptions must be tuples, not lists in general
-OKE = (asyncio.TimeoutError,)  # FIXME: until full browswer like Arsenic implemented
+# tuples, not lists
+
 EXC = (aiohttp.client_exceptions.ClientConnectorError, aiohttp.client_exceptions.ServerDisconnectedError)
+OKE = asyncio.TimeoutError
+TIMEOUT = 10
 
 
-async def check_pages(flist: typing.Iterator[Path], pat: str, ext: str, hdr: typing.Dict[str, str] = None, verbose: bool = False):
+async def check_urls(
+    flist: typing.Iterable[Path], pat: str, ext: str, hdr: typing.Dict[str, str] = None, verbose: bool = False
+) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     glob = re.compile(pat)
 
     tasks = [check_url(fn, glob, ext, hdr, verbose) for fn in flist]
 
-    warnings.simplefilter("ignore", urllib3.exceptions.InsecureRequestWarning)
+    warnings.simplefilter("ignore")
 
-    await asyncio.gather(*tasks)
+    urls = await asyncio.gather(*tasks)
 
     warnings.resetwarnings()
+    return list(itertools.chain(*urls))  # flatten list of lists
 
 
 async def check_url(
@@ -31,7 +35,8 @@ async def check_url(
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
-
+    if verbose:
+        print(fn.name, urls)
     bad = []  # type: typing.List[typing.Tuple[str, str, typing.Any]]
 
     for url in urls:
@@ -42,13 +47,13 @@ async def check_url(
         except OKE:
             continue
         except EXC as e:
-            bad += [(fn.name, url, e)]  # e, not str(e)
+            bad.append((fn.name, url, e))  # e, not str(e)
             print("\n", bad[-1])
             continue
 
         code = R.status
         if code != 200:
-            bad += [(fn.name, url, code)]
+            bad.append((fn.name, url, code))
             print("\n", bad[-1])
         else:
             if verbose:

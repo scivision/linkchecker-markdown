@@ -10,7 +10,7 @@ R = Path(__file__).parent
 
 @pytest.mark.parametrize("mode,path", [("sync", R), ("sync", R / "badlink.md"), ("coro", R), ("coro", R / "badlink.md")])
 def test_mod(mode, path):
-    urls = lc.run_check(path, "github.invalid", ".md", mode)
+    urls = lc.run_check(path, domain="github.invalid", ext=".md", mode=mode)
     assert len(urls) == 2
 
 

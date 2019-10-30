@@ -7,7 +7,7 @@ from .sync import check_urls
 
 
 def run_check(
-    path: Path, domain: str, ext: str, mode: str, verbose: bool = False
+    path: Path, domain: str, *, ext: str, mode: str, hdr: typing.Dict[str, str] = None, verbose: bool = False
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
@@ -29,11 +29,6 @@ def run_check(
     else:
         raise FileNotFoundError(path)
     # %% session
-    """
-    http://www.useragentstring.com
-    """
-    hdr = {"User-Agent": ("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:64.0) Gecko/20100101 Firefox/64.0")}
-
     if mode == "coro":
         urls = runner(coro_urls, flist, pat, ext, hdr, verbose)
     elif mode == "sync":

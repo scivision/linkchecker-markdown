@@ -12,7 +12,7 @@ def run_check(
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
     else:
-        pat = r"https?://[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
+        pat = r"https?://[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+"
 
     if ext == ".md":
         pat = r"\(" + pat + r"\)"

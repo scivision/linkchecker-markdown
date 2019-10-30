@@ -7,7 +7,7 @@ We suggest considering Go-based [htmltest](https://github.com/wjdp/htmltest) for
 Python Requests-based simple check of links in Markdown .md files only.
 I got frustrated with all the false positives and moreso the false negatives from LinkChecker.py, which is also very slow and only works with HTML.
 This tool is very helpful for large Markdown-based Jekyll and Hugo sites.
-It is very fast and simple.
+It is very fast and simple--it's what we use to check https://www.scivision.dev
 
 HOWEVER: we have found that as time goes on, more and more servers have strict anti-leeching methods that break this program too.
 The solution may be to use an asyncio-based web browser interface like Arsenic in this program, or simply use Go-based htmltest.

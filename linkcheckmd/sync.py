@@ -87,7 +87,7 @@ def retry(url: str, hdr: typing.Dict[str, str] = None, verifycert: bool = False)
     ok = False
 
     try:
-        with requests.get(url, allow_redirects=True, timeout=TIMEOUT, verify=verifycert, headers=hdr, stream=True) as stream:
+        with requests.head(url, allow_redirects=True, timeout=TIMEOUT, verify=verifycert, headers=hdr, stream=True) as stream:
             Rb = next(stream.iter_lines(80), None)
             # if Rb is not None and 'html' in Rb.decode('utf8'):
             if Rb and len(Rb) > 10:

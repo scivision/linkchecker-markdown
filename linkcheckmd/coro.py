@@ -43,7 +43,7 @@ async def check_url(
         if ext == ".md":
             url = url[1:-1]
         try:
-            R = await requests.get(url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify_ssl=False)
+            R = await requests.head(url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify_ssl=False)
         except OKE:
             continue
         except EXC as e:

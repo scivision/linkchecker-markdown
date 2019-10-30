@@ -22,13 +22,14 @@ def main():
     p.add_argument("domain", help="check only links to this domain (say github.com without https etc.)", nargs="?")
     p.add_argument("-a", "--useragent", help="user agent to use instead of default", default=UA)
     p.add_argument("-ext", help="file extension to scan", default=".md")
+    p.add_argument("-m", "--method", help="head is faster but gives false positives. Get is reliable but slower", default="get")
     p.add_argument("-v", "--verbose", action="store_true")
     p.add_argument("--mode", help="sync or coro", default="coro")
     P = p.parse_args()
 
     hdr = {"User-Agent": P.useragent}
 
-    run_check(P.path, P.domain, ext=P.ext, mode=P.mode, hdr=hdr, verbose=P.verbose)
+    run_check(P.path, P.domain, ext=P.ext, mode=P.mode, hdr=hdr, method=P.method, verbose=P.verbose)
 
 
 if __name__ == "__main__":

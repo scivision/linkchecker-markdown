@@ -15,12 +15,12 @@ TIMEOUT = 10
 
 
 async def check_urls(
-    flist: typing.Iterable[Path], pat: str, ext: str, hdr: typing.Dict[str, str] = None, verbose: bool = False
+    flist: typing.Iterable[Path], pat: str, ext: str, hdr: typing.Dict[str, str] = None, method: str = "get", verbose: bool = False
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     glob = re.compile(pat)
 
-    tasks = [check_url(fn, glob, ext, hdr, verbose) for fn in flist]
+    tasks = [check_url(fn, glob, ext, hdr, method=method, verbose=verbose) for fn in flist]
 
     warnings.simplefilter("ignore")
 
@@ -31,7 +31,7 @@ async def check_urls(
 
 
 async def check_url(
-    fn: Path, glob, ext: str, hdr: typing.Dict[str, str] = None, verbose: bool = False
+    fn: Path, glob, ext: str, hdr: typing.Dict[str, str] = None, *, method: str = "get", verbose: bool = False
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
@@ -43,7 +43,13 @@ async def check_url(
         if ext == ".md":
             url = url[1:-1]
         try:
-            R = await requests.head(url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify_ssl=False)
+            if method == "get":
+                # anti-crawling behavior doesn't like .head() method--.get() is slower but avoids lots of false positives
+                R = await requests.get(url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify_ssl=False)
+            elif method == "head":
+                R = await requests.head(url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify_ssl=False)
+            else:
+                raise ValueError(f"unknown method {method}")
         except OKE:
             continue
         except EXC as e:

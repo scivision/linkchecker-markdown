@@ -7,7 +7,7 @@ from .sync import check_urls
 
 
 def run_check(
-    path: Path, domain: str, *, ext: str, mode: str, hdr: typing.Dict[str, str] = None, verbose: bool = False
+    path: Path, domain: str, *, ext: str, mode: str, hdr: typing.Dict[str, str] = None, method: str = "get", verbose: bool = False
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
@@ -30,7 +30,7 @@ def run_check(
         raise FileNotFoundError(path)
     # %% session
     if mode == "coro":
-        urls = runner(coro_urls, flist, pat, ext, hdr, verbose)
+        urls = runner(coro_urls, flist, pat, ext, hdr, method, verbose)
     elif mode == "sync":
         urls = check_urls(flist, pat, ext, hdr, verbose=verbose)
     return urls

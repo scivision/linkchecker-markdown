@@ -1,16 +1,11 @@
-[![Actions Status](https://github.com/scivision/linkchecker-markdown/workflows/ci/badge.svg)](https://github.com/scivision/linkchecker-markdown/actions)
-
 # Linkchecker for Markdown-based static generated sites
 
-We suggest considering Go-based [htmltest](https://github.com/wjdp/htmltest) for many more features and performance.
+[![Actions Status](https://github.com/scivision/linkchecker-markdown/workflows/ci/badge.svg)](https://github.com/scivision/linkchecker-markdown/actions)
 
 Python Requests-based simple check of links in Markdown .md files only.
 I got frustrated with all the false positives and moreso the false negatives from LinkChecker.py, which is also very slow and only works with HTML.
 This tool is very helpful for large Markdown-based Jekyll and Hugo sites.
 It is very fast and simple--it's what we use to check https://www.scivision.dev
-
-HOWEVER: we have found that as time goes on, more and more servers have strict anti-leeching methods that break this program too.
-The solution may be to use an asyncio-based web browser interface like Arsenic in this program, or simply use Go-based htmltest.
 
 ## Install
 
@@ -30,8 +25,15 @@ Assuming your webpage Markdown files have top-level directory ~/web:
     ```sh
     python linkcheck.py ~/web/_posts
     ```
+
 * Hugo
 
     ```sh
     python linkcheck.py ~/web/content
     ```
+
+## Caveats
+
+Strict anti-leeching methods cause false positives with this and other link checking programs.
+The solution may be to use an asyncio-based web browser interface like Arsenic in this program, or simply use Go-based
+[htmltest](https://github.com/wjdp/htmltest).

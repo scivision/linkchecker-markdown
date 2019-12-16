@@ -8,6 +8,8 @@ python linkcheck.py ~/myHugosite/content/posts github.com
 python linkcheck.py ~/myJekyllsite/_posts
 """
 import argparse
+import logging
+
 from linkcheckmd import run_check
 
 """
@@ -33,9 +35,12 @@ def main():
     p.add_argument("--mode", choices=["sync", "coro"], default="coro")
     P = p.parse_args()
 
+    if P.verbose:
+        logging.basicConfig(level=logging.INFO)
+
     hdr = {"User-Agent": P.useragent}
 
-    run_check(P.path, P.domain, ext=P.ext, mode=P.mode, hdr=hdr, method=P.method, verbose=P.verbose)
+    run_check(P.path, P.domain, ext=P.ext, mode=P.mode, hdr=hdr, method=P.method)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import typing
 from pathlib import Path
 import warnings
 import urllib3
+import logging
 
 TIMEOUT = 10
 RETRYCODES = (400, 404, 405, 503)
@@ -17,12 +18,7 @@ synchronous routines
 
 
 def check_urls(
-    flist: typing.Iterable[Path],
-    pat: str,
-    ext: str = ".md",
-    hdr: typing.Dict[str, str] = None,
-    verifycert: bool = False,
-    verbose: bool = False,
+    flist: typing.Iterable[Path], pat: str, ext: str = ".md", hdr: typing.Dict[str, str] = None, verifycert: bool = False
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     glob = re.compile(pat)
@@ -37,14 +33,14 @@ def check_urls(
         bad: typing.List[typing.Tuple[str, str, typing.Any]] = []
 
         for fn in flist:
-            bad.extend(check_url(fn, glob, ext, sess, hdr, verifycert, verbose))
+            bad.extend(check_url(fn, glob, ext, sess, hdr, verifycert))
 
     warnings.resetwarnings()
     return bad
 
 
 def check_url(
-    fn: Path, glob, ext: str, sess, hdr: typing.Dict[str, str] = None, verifycert: bool = False, verbose: bool = False
+    fn: Path, glob, ext: str, sess, hdr: typing.Dict[str, str] = None, verifycert: bool = False
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
@@ -77,8 +73,7 @@ def check_url(
             bad += [(fn.name, url, code)]
             print("\n", bad[-1])
         else:
-            if verbose:
-                print(f"OK: {url:80s}", end="\r")
+            logging.info(f"OK: {url:80s}")
 
     return bad
 

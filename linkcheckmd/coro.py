@@ -6,6 +6,7 @@ from pathlib import Path
 import warnings
 import asyncio
 import itertools
+import logging
 
 # tuples, not lists
 
@@ -15,12 +16,12 @@ TIMEOUT = 10
 
 
 async def check_urls(
-    flist: typing.Iterable[Path], pat: str, ext: str, hdr: typing.Dict[str, str] = None, method: str = "get", verbose: bool = False
+    flist: typing.Iterable[Path], pat: str, ext: str, hdr: typing.Dict[str, str] = None, method: str = "get"
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     glob = re.compile(pat)
 
-    tasks = [check_url(fn, glob, ext, hdr, method=method, verbose=verbose) for fn in flist]
+    tasks = [check_url(fn, glob, ext, hdr, method=method) for fn in flist]
 
     warnings.simplefilter("ignore")
 
@@ -31,12 +32,11 @@ async def check_urls(
 
 
 async def check_url(
-    fn: Path, glob, ext: str, hdr: typing.Dict[str, str] = None, *, method: str = "get", verbose: bool = False
+    fn: Path, glob, ext: str, hdr: typing.Dict[str, str] = None, *, method: str = "get"
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
-    if verbose:
-        print(fn.name, urls)
+    logging.debug(fn.name, " ".join(urls))
     bad = []  # type: typing.List[typing.Tuple[str, str, typing.Any]]
 
     for url in urls:
@@ -62,7 +62,6 @@ async def check_url(
             bad.append((fn.name, url, code))
             print("\n", bad[-1])
         else:
-            if verbose:
-                print("OK: {:80s}".format(url), end="\r")
+            logging.info(f"OK: {url:80s}")
 
     return bad

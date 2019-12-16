@@ -15,7 +15,7 @@ git clone https://github.com/scivision/linkchecker-markdown
 pip install -e linkchecker-markdown
 ```
 
-## Examples
+## Usage
 
 The static site generator does NOT have to be running for these tests--it looks at the .md files directly.
 Assuming your webpage Markdown files have top-level directory ~/web:
@@ -31,6 +31,9 @@ Assuming your webpage Markdown files have top-level directory ~/web:
     ```sh
     python linkcheck.py ~/web/content
     ```
+
+The `-v` `--verbose` options prints the URLs as they are checked.
+Observe that URLs from different markdown files are interleaved, showing the asynchronous nature of this program.
 
 ## Caveats
 

@@ -1,13 +1,14 @@
 from pathlib import Path
-from .runner import runner
 import typing
+import logging
 
+from .runner import runner
 from .coro import check_urls as coro_urls
 from .sync import check_urls
 
 
 def run_check(
-    path: Path, domain: str, *, ext: str, mode: str, hdr: typing.Dict[str, str] = None, method: str = "get", verbose: bool = False
+    path: Path, domain: str, *, ext: str, mode: str, hdr: typing.Dict[str, str] = None, method: str = "get"
 ) -> typing.List[typing.Tuple[str, str, typing.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
@@ -17,8 +18,7 @@ def run_check(
     if ext == ".md":
         pat = r"\(" + pat + r"\)"
 
-    if verbose:
-        print(pat)
+    logging.debug(pat)
 
     path = Path(path).expanduser()
 
@@ -30,7 +30,7 @@ def run_check(
         raise FileNotFoundError(path)
     # %% session
     if mode == "coro":
-        urls = runner(coro_urls, flist, pat, ext, hdr, method, verbose)
+        urls = runner(coro_urls, flist, pat, ext, hdr, method)
     elif mode == "sync":
-        urls = check_urls(flist, pat, ext, hdr, verbose=verbose)
+        urls = check_urls(flist, pat, ext, hdr)
     return urls

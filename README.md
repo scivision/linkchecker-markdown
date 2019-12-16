@@ -2,12 +2,23 @@
 
 [![Actions Status](https://github.com/scivision/linkchecker-markdown/workflows/ci/badge.svg)](https://github.com/scivision/linkchecker-markdown/actions)
 
+[![pypi versions](https://img.shields.io/pypi/pyversions/linkcheckmd.svg)](https://pypi.python.org/pypi/linkcheckmd)
+[![PyPi Download stats](http://pepy.tech/badge/linkcheckmd)](http://pepy.tech/project/linkcheckmd)
+
 Python Requests-based simple check of links in Markdown .md files only.
 I got frustrated with all the false positives and moreso the false negatives from LinkChecker.py, which is also very slow and only works with HTML.
 This tool is very helpful for large Markdown-based Jekyll and Hugo sites.
 It is very fast and simple--it's what we use to check https://www.scivision.dev
 
 ## Install
+
+for latest release:
+
+```sh
+python -m pip install linkcheckmd
+```
+
+or for latest development version.
 
 ```sh
 git clone https://github.com/scivision/linkchecker-markdown

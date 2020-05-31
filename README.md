@@ -33,13 +33,13 @@ Assuming your webpage Markdown files have top-level directory ~/web:
 * Jekyll
 
     ```sh
-    python linkcheck.py ~/web/_posts
+    linkcheckMarkdown ~/web/_posts
     ```
 
 * Hugo
 
     ```sh
-    python linkcheck.py ~/web/content
+    linkcheckMarkdown ~/web/content
     ```
 
 The `-v` `--verbose` options prints the URLs as they are checked.

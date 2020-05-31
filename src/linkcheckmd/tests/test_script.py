@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import subprocess
-import sys
 import pytest
 from pathlib import Path
+
 import linkcheckmd as lc
 
 R = Path(__file__).resolve().parent
@@ -17,9 +17,7 @@ def test_mod(mode, path):
 
 @pytest.mark.parametrize("mode", ["sync", "coro"])
 def test_script(mode):
-    ret = subprocess.check_output(
-        [sys.executable, f"{Rs}/linkcheck.py", str(R), "github.invalid", "--mode", mode], universal_newlines=True
-    )
+    ret = subprocess.check_output(["linkcheckMarkdown", str(R), "github.invalid", "--mode", mode], universal_newlines=True)
     assert "github.invalid" in ret
 
 

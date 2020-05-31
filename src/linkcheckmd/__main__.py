@@ -3,9 +3,9 @@
 check links in Markdown files (as used for Static site generation)
 I noted linkchecker program doesn't catch GitHub 404 for example.
 
-python linkcheck.py ~/myHugosite/content/posts github.com
+linkcheckMarkdown ~/myHugosite/content/posts github.com
 
-python linkcheck.py ~/myJekyllsite/_posts
+linkcheckMarkdown ~/myJekyllsite/_posts
 """
 import argparse
 import logging
@@ -18,7 +18,7 @@ http://www.useragentstring.com
 UA = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:64.0) Gecko/20100101 Firefox/64.0"
 
 
-def main():
+def linkcheck():
     p = argparse.ArgumentParser()
     p.add_argument("path", help="path to Markdown files")
     p.add_argument("domain", help="check only links to this domain (say github.com without https etc.)", nargs="?")
@@ -44,4 +44,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    linkcheck()

@@ -25,7 +25,7 @@ def check_urls(
     verifycert: bool = False,
 ) -> T.List[T.Tuple[str, str, T.Any]]:
 
-    bad: T.List[T.Tuple[str, str, T.Any]] = []
+    bads: T.List[T.Tuple[str, str, T.Any]] = []
 
     glob = re.compile(regex)
 
@@ -37,20 +37,20 @@ def check_urls(
             sess.max_redirects = 5
         # %% loop
         for fn in flist:
-            bad.extend(check_url(fn, glob, ext, sess, hdr, verifycert))
+            for bad in check_url(fn, glob, ext, sess, hdr, verifycert):
+                print("\n", bad)
+                bads.append(bad)
 
     warnings.resetwarnings()
 
-    return bad
+    return bads
 
 
 def check_url(
     fn: Path, glob, ext: str, sess, hdr: T.Dict[str, str] = None, verifycert: bool = False
-) -> T.List[T.Tuple[str, str, T.Any]]:
+) -> T.Iterable[T.Tuple[str, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
-
-    bad: T.List[T.Tuple[str, str, T.Any]] = []
 
     for url in urls:
         if ext == ".md":
@@ -61,26 +61,21 @@ def check_url(
                 if retry(url, hdr, verifycert):
                     continue
                 else:
-                    bad.append((fn.name, url, R.status_code))
-                    print("\n", bad[-1])
+                    yield fn.name, url, R.status_code
                     continue
         except OKE:
             continue
         except EXC as e:
             if retry(url, hdr, verifycert):
                 continue
-            bad += [(fn.name, url, str(e))]
-            print("\n", bad[-1])
+            yield fn.name, url, str(e)
             continue
 
         code = R.status_code
         if code != 200:
-            bad += [(fn.name, url, code)]
-            print("\n", bad[-1])
+            yield fn.name, url, code
         else:
             logging.info(f"OK: {url:80s}")
-
-    return bad
 
 
 def retry(url: str, hdr: T.Dict[str, str] = None, verifycert: bool = False) -> bool:

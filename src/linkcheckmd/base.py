@@ -1,5 +1,5 @@
 from pathlib import Path
-import typing
+import typing as T
 import logging
 
 from .runner import runner
@@ -7,9 +7,15 @@ from .coro import check_urls as coro_urls
 from .sync import check_urls
 
 
-def run_check(
-    path: Path, domain: str, *, ext: str, mode: str, hdr: typing.Dict[str, str] = None, method: str = "get"
-) -> typing.List[typing.Tuple[str, str, typing.Any]]:
+def check_remotes(
+    path: Path,
+    domain: str,
+    *,
+    ext: str,
+    mode: str,
+    hdr: T.Dict[str, str] = None,
+    method: str = "get",
+) -> T.List[T.Tuple[str, str, T.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
     else:
@@ -18,7 +24,7 @@ def run_check(
     if ext == ".md":
         pat = r"\(" + pat + r"\)"
 
-    logging.debug(pat)
+    logging.debug(f"regex {pat}")
 
     path = Path(path).expanduser()
 

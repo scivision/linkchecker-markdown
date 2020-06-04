@@ -11,7 +11,9 @@ def runner(fun, *args):
     """
     Generic asyncio.run() equivalent for Python >= 3.5
     """
-    use_run = (os.name == "nt" and (3, 8) > sys.version_info >= (3, 7)) or (os.name != "nt" and sys.version_info >= (3, 7))
+    use_run = (os.name == "nt" and (3, 8) > sys.version_info >= (3, 7)) or (
+        os.name != "nt" and sys.version_info >= (3, 7)
+    )
 
     if use_run:
         result = asyncio.run(fun(*args))

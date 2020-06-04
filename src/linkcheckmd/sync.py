@@ -1,6 +1,6 @@
 import requests
 import re
-import typing
+import typing as T
 from pathlib import Path
 import warnings
 import urllib3
@@ -18,10 +18,16 @@ synchronous routines
 
 
 def check_urls(
-    flist: typing.Iterable[Path], pat: str, ext: str = ".md", hdr: typing.Dict[str, str] = None, verifycert: bool = False
-) -> typing.List[typing.Tuple[str, str, typing.Any]]:
+    flist: T.Iterable[Path],
+    regex: str,
+    ext: str = ".md",
+    hdr: T.Dict[str, str] = None,
+    verifycert: bool = False,
+) -> T.List[T.Tuple[str, str, T.Any]]:
 
-    glob = re.compile(pat)
+    bad: T.List[T.Tuple[str, str, T.Any]] = []
+
+    glob = re.compile(regex)
 
     warnings.simplefilter("ignore", urllib3.exceptions.InsecureRequestWarning)
 
@@ -30,22 +36,21 @@ def check_urls(
             sess.headers.update(hdr)
             sess.max_redirects = 5
         # %% loop
-        bad: typing.List[typing.Tuple[str, str, typing.Any]] = []
-
         for fn in flist:
             bad.extend(check_url(fn, glob, ext, sess, hdr, verifycert))
 
     warnings.resetwarnings()
+
     return bad
 
 
 def check_url(
-    fn: Path, glob, ext: str, sess, hdr: typing.Dict[str, str] = None, verifycert: bool = False
-) -> typing.List[typing.Tuple[str, str, typing.Any]]:
+    fn: Path, glob, ext: str, sess, hdr: T.Dict[str, str] = None, verifycert: bool = False
+) -> T.List[T.Tuple[str, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
 
-    bad: typing.List[typing.Tuple[str, str, typing.Any]] = []
+    bad: T.List[T.Tuple[str, str, T.Any]] = []
 
     for url in urls:
         if ext == ".md":
@@ -78,12 +83,14 @@ def check_url(
     return bad
 
 
-def retry(url: str, hdr: typing.Dict[str, str] = None, verifycert: bool = False) -> bool:
+def retry(url: str, hdr: T.Dict[str, str] = None, verifycert: bool = False) -> bool:
     ok = False
 
     try:
         # anti-crawling behavior doesn't like .head() method--.get() is slower but avoids lots of false positives
-        with requests.get(url, allow_redirects=True, timeout=TIMEOUT, verify=verifycert, headers=hdr, stream=True) as stream:
+        with requests.get(
+            url, allow_redirects=True, timeout=TIMEOUT, verify=verifycert, headers=hdr, stream=True
+        ) as stream:
             Rb = next(stream.iter_lines(80), None)
             # if Rb is not None and 'html' in Rb.decode('utf8'):
             if Rb and len(Rb) > 10:

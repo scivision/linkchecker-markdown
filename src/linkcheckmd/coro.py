@@ -1,5 +1,5 @@
 import re
-import typing
+import typing as T
 from pathlib import Path
 import warnings
 import asyncio
@@ -22,10 +22,14 @@ TIMEOUT = 10
 
 
 async def check_urls(
-    flist: typing.Iterable[Path], pat: str, ext: str, hdr: typing.Dict[str, str] = None, method: str = "get"
-) -> typing.List[typing.Tuple[str, str, typing.Any]]:
+    flist: T.Iterable[Path],
+    regex: str,
+    ext: str,
+    hdr: T.Dict[str, str] = None,
+    method: str = "get",
+) -> T.List[T.Tuple[str, str, T.Any]]:
 
-    glob = re.compile(pat)
+    glob = re.compile(regex)
 
     tasks = [check_url(fn, glob, ext, hdr, method=method) for fn in flist]
 
@@ -34,16 +38,17 @@ async def check_urls(
     urls = await asyncio.gather(*tasks)
 
     warnings.resetwarnings()
+
     return list(itertools.chain(*urls))  # flatten list of lists
 
 
 async def check_url(
-    fn: Path, glob, ext: str, hdr: typing.Dict[str, str] = None, *, method: str = "get"
-) -> typing.List[typing.Tuple[str, str, typing.Any]]:
+    fn: Path, glob, ext: str, hdr: T.Dict[str, str] = None, *, method: str = "get"
+) -> T.List[T.Tuple[str, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
     logging.debug(fn.name, " ".join(urls))
-    bad = []  # type: typing.List[typing.Tuple[str, str, typing.Any]]
+    bad = []  # type: T.List[T.Tuple[str, str, T.Any]]
 
     for url in urls:
         if ext == ".md":
@@ -51,9 +56,13 @@ async def check_url(
         try:
             if method == "get":
                 # anti-crawling behavior doesn't like .head() method--.get() is slower but avoids lots of false positives
-                R = requests.get(url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify=False)
+                R = requests.get(
+                    url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify=False
+                )
             elif method == "head":
-                R = requests.head(url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify=False)
+                R = requests.head(
+                    url, allow_redirects=True, timeout=TIMEOUT, headers=hdr, verify=False
+                )
             else:
                 raise ValueError(f"unknown method {method}")
         except OKE:

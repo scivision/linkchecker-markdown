@@ -1,2 +1,2 @@
 import requests
-from .base import run_check
+from .base import check_remotes

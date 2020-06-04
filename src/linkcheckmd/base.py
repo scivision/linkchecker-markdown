@@ -1,10 +1,41 @@
 from pathlib import Path
 import typing as T
 import logging
+import re
 
 from .runner import runner
 from .coro import check_urls as coro_urls
 from .sync import check_urls
+
+
+def check_local(path: Path, ext: str) -> T.Iterable[T.Tuple[str, str]]:
+    """ check internal links of Markdown files
+    this is a simple static analysis; only plain filename references are handled.
+    """
+
+    regex = r"\]\(([=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]+)\)"
+    glob = re.compile(regex)
+
+    path = Path(path).resolve().expanduser()  # must have .resolve()
+
+    for fn in get_files(path, ext):
+        urls = glob.findall(fn.read_text(errors="ignore"))
+
+        for url in urls:
+            if url[0] == "#":
+                continue
+
+            if not url[0] == "/":
+                if {"/", "."}.intersection(url.strip("/")):
+                    continue
+                yield fn.name, url
+
+            if {"/", "."}.intersection(url.strip("/")):
+                continue
+
+            if not (path / (url.strip("/") + ext)).is_file():
+                if not (path.parent / (url.strip("/") + ext)).is_file():
+                    yield fn.name, url
 
 
 def check_remotes(
@@ -26,7 +57,18 @@ def check_remotes(
 
     logging.debug(f"regex {pat}")
 
-    path = Path(path).expanduser()
+    flist = get_files(path, ext)
+    # %% session
+    if mode == "coro":
+        urls = runner(coro_urls, flist, pat, ext, hdr, method)
+    elif mode == "sync":
+        urls = check_urls(flist, pat, ext, hdr)
+    return urls
+
+
+def get_files(path: Path, ext: str) -> T.Iterable[Path]:
+
+    path = Path(path).expanduser().resolve()
 
     if path.is_dir():
         flist = iter(path.glob("*" + ext))
@@ -34,9 +76,5 @@ def check_remotes(
         flist = iter([path])
     else:
         raise FileNotFoundError(path)
-    # %% session
-    if mode == "coro":
-        urls = runner(coro_urls, flist, pat, ext, hdr, method)
-    elif mode == "sync":
-        urls = check_urls(flist, pat, ext, hdr)
-    return urls
+
+    return flist

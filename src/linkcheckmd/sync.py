@@ -61,7 +61,7 @@ def check_url(
                 if retry(url, hdr, verifycert):
                     continue
                 else:
-                    bad += [(fn.name, url, R.status_code)]
+                    bad.append((fn.name, url, R.status_code))
                     print("\n", bad[-1])
                     continue
         except OKE:

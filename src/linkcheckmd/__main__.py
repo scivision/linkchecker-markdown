@@ -10,7 +10,7 @@ linkcheckMarkdown ~/myJekyllsite/_posts
 import argparse
 import logging
 
-from linkcheckmd import check_remotes
+from linkcheckmd import check_remotes, check_local
 
 """
 http://www.useragentstring.com
@@ -45,7 +45,11 @@ def linkcheck():
 
     hdr = {"User-Agent": P.useragent}
 
-    check_remotes(P.path, P.domain, ext=P.ext, mode=P.mode, hdr=hdr, method=P.method)
+    for bad in check_local(P.path, ext=P.ext):
+        print(bad)
+
+    if not P.local:
+        check_remotes(P.path, P.domain, ext=P.ext, mode=P.mode, hdr=hdr, method=P.method)
 
 
 if __name__ == "__main__":

@@ -29,6 +29,7 @@ def check_local(path: Path, ext: str) -> T.Iterable[T.Tuple[str, str]]:
                 if {"/", "."}.intersection(url.strip("/")):
                     continue
                 yield fn.name, url
+                continue
 
             if {"/", "."}.intersection(url.strip("/")):
                 continue

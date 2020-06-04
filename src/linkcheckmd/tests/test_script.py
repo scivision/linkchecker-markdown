@@ -9,6 +9,12 @@ R = Path(__file__).resolve().parent
 Rs = R.parents[1]
 
 
+def test_local():
+    path = R / "badlink.md"
+    urls = list(lc.check_local(path, ext=".md"))
+    assert len(urls) == 2
+
+
 @pytest.mark.parametrize(
     "mode,path", [("sync", R), ("sync", R / "badlink.md"), ("coro", R), ("coro", R / "badlink.md")]
 )

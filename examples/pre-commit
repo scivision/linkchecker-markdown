@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
-avoid pushing local broken links
+avoid pushing local broken links.
+This example "content/posts" is for Hugo static site generator sites.
 
 Git hooks are by default run from the top-level Git repo directory
 """
@@ -14,7 +15,7 @@ if not shutil.which("linkcheckMarkdown"):
     raise SystemExit("please install https://github.com/scivision/linkchecker-markdown")
 
 ok = True
-for p in ("content", "content/posts"):
+for p in ["content/posts"]:
     stdout = subprocess.check_output(
         ["linkcheckMarkdown", "-local", p], universal_newlines=True
     )

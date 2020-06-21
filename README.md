@@ -45,6 +45,14 @@ Assuming your webpage Markdown files have top-level directory ~/web:
 The `-v` `--verbose` options prints the URLs as they are checked.
 Observe that URLs from different markdown files are interleaved, showing the asynchronous nature of this program.
 
+### Git precommit
+
+See
+[./example/pre-commit](pre-commit)
+script for a
+[Git hook pre-commit](https://www.scivision.dev/git-markdown-pre-commit-linkcheck)
+Python script.
+
 ## Alternatives
 
 Strict anti-leeching methods cause false positives with this and other link checking programs.

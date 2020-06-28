@@ -48,7 +48,7 @@ Observe that URLs from different markdown files are interleaved, showing the asy
 ### Git precommit
 
 See
-[./example/pre-commit](pre-commit)
+[./examples/pre-commit](pre-commit)
 script for a
 [Git hook pre-commit](https://www.scivision.dev/git-markdown-pre-commit-linkcheck)
 Python script.

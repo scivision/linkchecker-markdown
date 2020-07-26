@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """
 check links in Markdown files (as used for Static site generation)
-I noted linkchecker program doesn't catch GitHub 404 for example.
 
 linkcheckMarkdown ~/myHugosite/content/posts github.com
 
@@ -9,6 +8,7 @@ linkcheckMarkdown ~/myJekyllsite/_posts
 """
 import argparse
 import logging
+import time
 
 from linkcheckmd import check_remotes, check_local
 
@@ -49,8 +49,6 @@ def linkcheck():
         print(bad)
 
     if not P.local:
+        tic = time.monotonic()
         check_remotes(P.path, P.domain, ext=P.ext, mode=P.mode, hdr=hdr, method=P.method)
-
-
-if __name__ == "__main__":
-    linkcheck()
+        print(time.monotonic() - tic, " seconds to check remote links in mode:", P.mode)

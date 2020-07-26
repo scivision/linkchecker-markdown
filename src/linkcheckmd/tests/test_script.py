@@ -1,35 +1,36 @@
-#!/usr/bin/env python
 import subprocess
 import pytest
-from pathlib import Path
+import importlib.resources
 
 import linkcheckmd as lc
 
-R = Path(__file__).resolve().parent
-Rs = R.parents[1]
-
 
 def test_local():
-    path = R / "badlink.md"
-    urls = list(lc.check_local(path, ext=".md"))
+    with importlib.resources.path("linkcheckmd.tests", "badlink.md") as file:
+        urls = list(lc.check_local(file, ext=".md"))
     assert len(urls) == 2
 
 
-@pytest.mark.parametrize(
-    "mode,path", [("sync", R), ("sync", R / "badlink.md"), ("coro", R), ("coro", R / "badlink.md")]
-)
-def test_mod(mode, path):
-    urls = lc.check_remotes(path, domain="github.invalid", ext=".md", mode=mode)
+@pytest.mark.parametrize("mode", ["sync", "coro"])
+def test_mod(mode):
+
+    if mode == "sync":
+        pytest.importorskip("requests", reason="Synchronous requires requests")
+
+    with importlib.resources.path("linkcheckmd.tests", "badlink.md") as file:
+        urls = lc.check_remotes(file, domain="github.invalid", ext=".md", mode=mode)
+
     assert len(urls) == 2
 
 
 @pytest.mark.parametrize("mode", ["sync", "coro"])
 def test_script(mode):
-    ret = subprocess.check_output(
-        ["linkcheckMarkdown", str(R), "github.invalid", "--mode", mode], universal_newlines=True
-    )
+
+    if mode == "sync":
+        pytest.importorskip("requests", reason="Synchronous requires requests")
+
+    with importlib.resources.path("linkcheckmd.tests", "badlink.md") as file:
+        ret = subprocess.check_output(
+            ["linkcheckMarkdown", str(file), "github.invalid", "--mode", mode], text=True
+        )
     assert "github.invalid" in ret
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])

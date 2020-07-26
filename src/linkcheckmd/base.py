@@ -4,8 +4,7 @@ import logging
 import re
 
 from .runner import runner
-from .coro import check_urls as coro_urls
-from .sync import check_urls
+from .coro import check_urls
 
 
 def check_local(path: Path, ext: str) -> T.Iterable[T.Tuple[str, str]]:
@@ -61,9 +60,10 @@ def check_remotes(
     flist = get_files(path, ext)
     # %% session
     if mode == "coro":
-        urls = runner(coro_urls, flist, pat, ext, hdr, method)
+        urls = runner(check_urls, flist, pat, ext, hdr, method)
     elif mode == "sync":
-        urls = check_urls(flist, pat, ext, hdr)
+        from .sync import check_urls as sync_urls
+        urls = sync_urls(flist, pat, ext, hdr)
     return urls
 
 

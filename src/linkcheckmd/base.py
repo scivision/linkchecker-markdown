@@ -2,8 +2,8 @@ from pathlib import Path
 import typing as T
 import logging
 import re
+import asyncio
 
-from .runner import runner
 from .coro import check_urls
 
 
@@ -60,10 +60,12 @@ def check_remotes(
     flist = get_files(path, ext)
     # %% session
     if mode == "coro":
-        urls = runner(check_urls, flist, pat, ext, hdr, method)
-    elif mode == "sync":
+        urls = asyncio.run(check_urls(flist, pat, ext, hdr, method))
+    else:
         from .sync import check_urls as sync_urls
+
         urls = sync_urls(flist, pat, ext, hdr)
+
     return urls
 
 

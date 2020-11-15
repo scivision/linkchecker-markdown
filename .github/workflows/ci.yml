@@ -23,6 +23,7 @@ jobs:
     - run: pytest
 
   integration:
+    needs: linux
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

@@ -8,7 +8,7 @@ from .coro import check_urls
 
 
 def check_local(path: Path, ext: str) -> T.Iterable[T.Tuple[str, str]]:
-    """ check internal links of Markdown files
+    """check internal links of Markdown files
     this is a simple static analysis; only plain filename references are handled.
     """
 

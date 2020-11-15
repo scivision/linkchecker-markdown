@@ -28,18 +28,30 @@ pip install -e linkchecker-markdown
 ## Usage
 
 The static site generator does NOT have to be running for these tests--it looks at the .md files directly.
-Assuming your webpage Markdown files have top-level directory ~/web:
+The examples assume webpage Markdown files have top-level directory ~/web.
+
+This program may be invoked by either:
+
+```sh
+linkcheckMarkdown
+```
+
+or
+
+```sh
+python -m linkcheckmd
+```
 
 * Jekyll
 
     ```sh
-    linkcheckMarkdown ~/web/_posts
+    python -m linkcheckmd ~/web/_posts
     ```
 
 * Hugo
 
     ```sh
-    linkcheckMarkdown ~/web/content
+    python -m linkcheckmd ~/web/content
     ```
 
 The `-v` `--verbose` options prints the URLs as they are checked.
@@ -49,8 +61,6 @@ Observe that URLs from different markdown files are interleaved, showing the asy
 
 For benchmarking and reference, we include a synchronous Requests-based method.
 For a website with 100+ pages, compare times of:
-
-
 
 ### Git precommit
 

@@ -30,6 +30,16 @@ pip install -e linkchecker-markdown
 The static site generator does NOT have to be running for these tests--it looks at the .md files directly.
 The examples assume webpage Markdown files have top-level directory ~/web.
 
+### Python code
+
+```python
+import linkcheckmd as lc
+
+lc.check_links("~/web")
+```
+
+### Command-line
+
 This program may be invoked by either:
 
 ```sh

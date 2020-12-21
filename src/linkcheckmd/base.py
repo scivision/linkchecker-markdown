@@ -6,6 +6,30 @@ import asyncio
 
 from .coro import check_urls
 
+# http://www.useragentstring.com
+USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:64.0) Gecko/20100101 Firefox/64.0"
+
+
+def check_links(
+    path: Path,
+    domain: str = None,
+    *,
+    ext: str,
+    hdr: T.Dict[str, str] = None,
+    method: str = "get",
+    use_async: bool = True,
+    local: bool = False,
+) -> T.Iterable[tuple]:
+
+    for bad in check_local(path, ext=ext):
+        print(bad)
+
+    bad = None
+    if not local:
+        bad = check_remotes(path, domain, ext=ext, hdr=hdr, method=method, use_async=use_async)
+
+    return bad
+
 
 def check_local(path: Path, ext: str) -> T.Iterable[T.Tuple[str, str]]:
     """check internal links of Markdown files
@@ -43,9 +67,9 @@ def check_remotes(
     domain: str,
     *,
     ext: str,
-    mode: str,
     hdr: T.Dict[str, str] = None,
     method: str = "get",
+    use_async: bool = True,
 ) -> T.List[T.Tuple[str, str, T.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
@@ -58,8 +82,12 @@ def check_remotes(
     logging.debug(f"regex {pat}")
 
     flist = get_files(path, ext)
+
+    if not hdr:
+        hdr = {"User-Agent": USER_AGENT}
+
     # %% session
-    if mode == "coro":
+    if use_async:
         urls = asyncio.run(check_urls(flist, pat, ext, hdr, method))
     else:
         from .sync import check_urls as sync_urls

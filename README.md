@@ -4,7 +4,7 @@
 [![pypi versions](https://img.shields.io/pypi/pyversions/linkcheckmd.svg)](https://pypi.python.org/pypi/linkcheckmd)
 [![PyPi Download stats](http://pepy.tech/badge/linkcheckmd)](http://pepy.tech/project/linkcheckmd)
 
-Blazing-fast Python asyncio / [aiohttp](https://docs.aiohttp.org/)
+Blazing-fast (10000 Markdown files per second) Python asyncio / [aiohttp](https://docs.aiohttp.org/)
 based simple check of links in Markdown .md files only.
 This tool is very helpful for large Markdown-based Jekyll and Hugo sites as
 well as Markdown-based [MkDocs](https://www.mkdocs.org/) documentation projects.

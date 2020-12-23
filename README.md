@@ -6,7 +6,8 @@
 
 Blazing-fast Python asyncio / [aiohttp](https://docs.aiohttp.org/)
 based simple check of links in Markdown .md files only.
-This tool is very helpful for large Markdown-based Jekyll and Hugo sites.
+This tool is very helpful for large Markdown-based Jekyll and Hugo sites as
+well as Markdown-based [MkDocs](https://www.mkdocs.org/) documentation projects.
 It is very fast and simple--it's what we use to check https://www.scivision.dev
 
 ## Install
@@ -29,6 +30,8 @@ pip install -e linkchecker-markdown
 
 The static site generator does NOT have to be running for these tests--it looks at the .md files directly.
 The examples assume webpage Markdown files have top-level directory ~/web.
+*If using the linkchecker on an MkDocs documentation project, Markdown files
+are typically found in a `~/docs` directory.*
 
 ### Python code
 
@@ -64,6 +67,12 @@ python -m linkcheckmd
     python -m linkcheckmd ~/web/content
     ```
 
+* MkDocs Documentation
+
+    ```sh
+    python -m linkcheckmd ~/docs
+    ```
+
 The `-v` `--verbose` options prints the URLs as they are checked.
 Observe that URLs from different markdown files are interleaved, showing the asynchronous nature of this program.
 
@@ -79,6 +88,11 @@ See
 script for a
 [Git hook pre-commit](https://www.scivision.dev/git-markdown-pre-commit-linkcheck)
 Python script.
+
+### Tox and CI
+
+This program can also be used as a check for bad links during continuous integration
+testing or when using [`tox`](https://tox.readthedocs.io/).
 
 ## Alternatives
 

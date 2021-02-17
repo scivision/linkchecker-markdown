@@ -48,18 +48,21 @@ def check_local(path: Path, ext: str) -> T.Iterable[T.Tuple[str, str]]:
             if url[0] == "#":
                 continue
 
+            stem = url.strip("/")
+
             if not url[0] == "/":
-                if {"/", "."}.intersection(url.strip("/")):
+                if {"/", "."}.intersection(stem):
                     continue
                 yield fn.name, url
                 continue
 
-            if {"/", "."}.intersection(url.strip("/")):
+            if {"/", "."}.intersection(stem):
                 continue
 
-            if not (path / (url.strip("/") + ext)).is_file():
-                if not (path.parent / (url.strip("/") + ext)).is_file():
-                    yield fn.name, url
+            if not ((path / (stem + ext)).is_file() or
+                    (path.parent / (stem + ext)).is_file() or
+                    (path / stem).is_dir()):
+                yield fn.name, url
 
 
 def check_remotes(

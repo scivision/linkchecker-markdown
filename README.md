@@ -1,6 +1,7 @@
 # Linkchecker for Markdown-based static generated sites
 
 ![Actions Status](https://github.com/scivision/linkchecker-markdown/workflows/ci/badge.svg)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/scivision/linkchecker-markdown.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/scivision/linkchecker-markdown/context:python)
 [![pypi versions](https://img.shields.io/pypi/pyversions/linkcheckmd.svg)](https://pypi.python.org/pypi/linkcheckmd)
 [![PyPi Download stats](http://pepy.tech/badge/linkcheckmd)](http://pepy.tech/project/linkcheckmd)
 

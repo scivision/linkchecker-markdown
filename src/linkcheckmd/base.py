@@ -108,10 +108,13 @@ def get_files(path: Path, ext: str) -> T.Iterable[Path]:
     path = Path(path).expanduser().resolve()
 
     if path.is_dir():
-        flist = iter(path.glob("*" + ext))
+        for p in path.iterdir():
+            if p.is_file() and p.suffix == ext:
+                yield p
+            elif p.is_dir() and (p / "index.md").is_file():
+                # Hugo PageResource
+                yield p / "index.md"
     elif path.is_file():
-        flist = iter([path])
+        yield path
     else:
         raise FileNotFoundError(path)
-
-    return flist

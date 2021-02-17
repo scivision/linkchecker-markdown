@@ -1,3 +1,4 @@
+from __future__ import annotations
 from pathlib import Path
 import typing as T
 import logging
@@ -15,7 +16,7 @@ def check_links(
     domain: str = None,
     *,
     ext: str,
-    hdr: T.Dict[str, str] = None,
+    hdr: dict[str, str] = None,
     method: str = "get",
     use_async: bool = True,
     local: bool = False,
@@ -31,7 +32,7 @@ def check_links(
     return bad
 
 
-def check_local(path: Path, ext: str) -> T.Iterable[T.Tuple[str, str]]:
+def check_local(path: Path, ext: str) -> T.Iterable[tuple[str, str]]:
     """check internal links of Markdown files
     this is a simple static analysis; only plain filename references are handled.
     """
@@ -59,9 +60,11 @@ def check_local(path: Path, ext: str) -> T.Iterable[T.Tuple[str, str]]:
             if {"/", "."}.intersection(stem):
                 continue
 
-            if not ((path / (stem + ext)).is_file() or
-                    (path.parent / (stem + ext)).is_file() or
-                    (path / stem).is_dir()):
+            if not (
+                (path / (stem + ext)).is_file()
+                or (path.parent / (stem + ext)).is_file()
+                or (path / stem).is_dir()
+            ):
                 yield fn.name, url
 
 
@@ -70,10 +73,10 @@ def check_remotes(
     domain: str,
     *,
     ext: str,
-    hdr: T.Dict[str, str] = None,
+    hdr: dict[str, str] = None,
     method: str = "get",
     use_async: bool = True,
-) -> T.List[T.Tuple[str, str, T.Any]]:
+) -> list[tuple[str, str, T.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
     else:

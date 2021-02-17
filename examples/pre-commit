@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 avoid pushing local broken links.
 This example "content/posts" is for Hugo static site generator sites.
@@ -8,7 +8,6 @@ Git hooks are by default run from the top-level Git repo directory
 
 import subprocess
 import shutil
-from pathlib import Path
 
 
 if not shutil.which("linkcheckMarkdown"):

@@ -1,3 +1,4 @@
+from __future__ import annotations
 import requests
 import re
 import typing as T
@@ -21,11 +22,11 @@ def check_urls(
     flist: T.Iterable[Path],
     regex: str,
     ext: str = ".md",
-    hdr: T.Dict[str, str] = None,
+    hdr: dict[str, str] = None,
     verifycert: bool = False,
-) -> T.List[T.Tuple[str, str, T.Any]]:
+) -> list[tuple[str, str, T.Any]]:
 
-    bads: T.List[T.Tuple[str, str, T.Any]] = []
+    bads: list[tuple[str, str, T.Any]] = []
 
     glob = re.compile(regex)
 
@@ -47,8 +48,8 @@ def check_urls(
 
 
 def check_url(
-    fn: Path, glob, ext: str, sess, hdr: T.Dict[str, str] = None, verifycert: bool = False
-) -> T.Iterable[T.Tuple[str, str, T.Any]]:
+    fn: Path, glob, ext: str, sess, hdr: dict[str, str] = None, verifycert: bool = False
+) -> T.Iterable[tuple[str, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
 
@@ -78,7 +79,7 @@ def check_url(
             logging.info(f"OK: {url:80s}")
 
 
-def retry(url: str, hdr: T.Dict[str, str] = None, verifycert: bool = False) -> bool:
+def retry(url: str, hdr: dict[str, str] = None, verifycert: bool = False) -> bool:
     ok = False
 
     try:

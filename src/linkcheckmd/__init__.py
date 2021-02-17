@@ -4,4 +4,4 @@ import asyncio
 from .base import check_links, check_local, check_remotes
 
 if os.name == "nt":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())  # type: ignore
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

@@ -1,3 +1,4 @@
+from __future__ import annotations
 import re
 import typing as T
 from pathlib import Path
@@ -22,9 +23,9 @@ async def check_urls(
     flist: T.Iterable[Path],
     regex: str,
     ext: str,
-    hdr: T.Dict[str, str] = None,
+    hdr: dict[str, str] = None,
     method: str = "get",
-) -> T.List[T.Tuple[str, str, T.Any]]:
+) -> list[tuple[str, str, T.Any]]:
 
     glob = re.compile(regex)
 
@@ -40,12 +41,12 @@ async def check_urls(
 
 
 async def check_url(
-    fn: Path, glob, ext: str, hdr: T.Dict[str, str] = None, *, method: str = "get"
-) -> T.List[T.Tuple[str, str, T.Any]]:
+    fn: Path, glob, ext: str, hdr: dict[str, str] = None, *, method: str = "get"
+) -> list[tuple[str, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
     logging.debug(fn.name, " ".join(urls))
-    bad = []  # type: T.List[T.Tuple[str, str, T.Any]]
+    bad: list[tuple[str, str, T.Any]] = []
 
     timeout = aiohttp.ClientTimeout(total=TIMEOUT)
 

@@ -37,6 +37,10 @@ async def check_urls(
 
     warnings.resetwarnings()
 
+    # this is per aiohttp manual, when using HTTPS SSL sites, just before closing
+    # the event loop, do a 250ms sleep (not for each site)
+    await asyncio.sleep(0.250)
+
     return list(itertools.chain(*urls))  # flatten list of lists
 
 

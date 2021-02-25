@@ -9,6 +9,8 @@ import logging
 
 import aiohttp
 
+from . import files
+
 # tuples, not lists
 
 EXC = (
@@ -20,16 +22,17 @@ TIMEOUT = 10
 
 
 async def check_urls(
-    flist: T.Iterable[Path],
+    path: Path,
     regex: str,
     ext: str,
     hdr: dict[str, str] = None,
     method: str = "get",
+    recurse: bool = False,
 ) -> list[tuple[str, str, T.Any]]:
 
     glob = re.compile(regex)
 
-    tasks = [check_url(fn, glob, ext, hdr, method=method) for fn in flist]
+    tasks = [check_url(fn, glob, ext, hdr, method=method) for fn in files.get(path, ext, recurse)]
 
     warnings.simplefilter("ignore")
 

@@ -6,6 +6,7 @@ import re
 import asyncio
 
 from .coro import check_urls
+from . import files
 
 # http://www.useragentstring.com
 USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:64.0) Gecko/20100101 Firefox/64.0"
@@ -20,14 +21,21 @@ def check_links(
     method: str = "get",
     use_async: bool = True,
     local: bool = False,
+    recurse: bool = False,
 ) -> T.Iterable[tuple]:
 
-    for bad in check_local(path, ext=ext):
-        print(bad)
+    if local and recurse:
+        logging.error("'recurse' currently works only for remote links.")
+
+    for missing_file in check_local(path, ext=ext):
+        # to get an iterable/list of these, call check_local directly from your program
+        print(missing_file)
 
     bad = None
     if not local:
-        bad = check_remotes(path, domain, ext=ext, hdr=hdr, method=method, use_async=use_async)
+        bad = check_remotes(
+            path, domain, ext=ext, hdr=hdr, method=method, use_async=use_async, recurse=recurse
+        )
 
     return bad
 
@@ -42,7 +50,7 @@ def check_local(path: Path, ext: str) -> T.Iterable[tuple[str, str]]:
 
     path = Path(path).resolve().expanduser()  # must have .resolve()
 
-    for fn in get_files(path, ext):
+    for fn in files.get(path, ext):
         urls = glob.findall(fn.read_text(errors="ignore"))
 
         for url in urls:
@@ -76,6 +84,7 @@ def check_remotes(
     hdr: dict[str, str] = None,
     method: str = "get",
     use_async: bool = True,
+    recurse: bool = False,
 ) -> list[tuple[str, str, T.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
@@ -87,34 +96,17 @@ def check_remotes(
 
     logging.debug(f"regex {pat}")
 
-    flist = get_files(path, ext)
-
     if not hdr:
         hdr = {"User-Agent": USER_AGENT}
 
     # %% session
     if use_async:
-        urls = asyncio.run(check_urls(flist, pat, ext, hdr, method))
+        urls = asyncio.run(
+            check_urls(path, regex=pat, ext=ext, hdr=hdr, method=method, recurse=recurse)
+        )
     else:
         from .sync import check_urls as sync_urls
 
-        urls = sync_urls(flist, pat, ext, hdr)
+        urls = sync_urls(path, pat, ext, hdr)
 
     return urls
-
-
-def get_files(path: Path, ext: str) -> T.Iterable[Path]:
-
-    path = Path(path).expanduser().resolve()
-
-    if path.is_dir():
-        for p in path.iterdir():
-            if p.is_file() and p.suffix == ext:
-                yield p
-            elif p.is_dir() and (p / "index.md").is_file():
-                # Hugo PageResource
-                yield p / "index.md"
-    elif path.is_file():
-        yield path
-    else:
-        raise FileNotFoundError(path)

@@ -32,6 +32,7 @@ def main():
     p.add_argument("-v", "--verbose", action="store_true")
     p.add_argument("--sync", help="don't use asyncio", action="store_true")
     p.add_argument("-local", help="only check local files", action="store_true")
+    p.add_argument("-r", "--recurse", help="recurse directories under path", action="store_true")
     P = p.parse_args()
 
     if P.verbose:
@@ -39,7 +40,13 @@ def main():
 
     tic = time.monotonic()
     check_links(
-        P.path, ext=P.ext, domain=P.domain, method=P.method, use_async=not P.sync, local=P.local
+        P.path,
+        ext=P.ext,
+        domain=P.domain,
+        method=P.method,
+        use_async=not P.sync,
+        local=P.local,
+        recurse=P.recurse,
     )
 
     print(f"{time.monotonic() - tic:0.3} seconds to check links")

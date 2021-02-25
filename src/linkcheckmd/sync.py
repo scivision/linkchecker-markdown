@@ -7,6 +7,8 @@ import warnings
 import urllib3
 import logging
 
+from . import files
+
 TIMEOUT = 10
 RETRYCODES = (400, 404, 405, 503)
 # multiple exceptions must be tuples, not lists in general
@@ -19,11 +21,12 @@ synchronous routines
 
 
 def check_urls(
-    flist: T.Iterable[Path],
+    path: Path,
     regex: str,
     ext: str = ".md",
     hdr: dict[str, str] = None,
     verifycert: bool = False,
+    recurse: bool = False,
 ) -> list[tuple[str, str, T.Any]]:
 
     bads: list[tuple[str, str, T.Any]] = []
@@ -37,7 +40,7 @@ def check_urls(
             sess.headers.update(hdr)
             sess.max_redirects = 5
         # %% loop
-        for fn in flist:
+        for fn in files.get(path, ext, recurse):
             for bad in check_url(fn, glob, ext, sess, hdr, verifycert):
                 print("\n", bad)
                 bads.append(bad)

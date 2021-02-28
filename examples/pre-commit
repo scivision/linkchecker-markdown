@@ -15,11 +15,9 @@ if not shutil.which("linkcheckMarkdown"):
 
 ok = True
 for p in ["content/posts"]:
-    stdout = subprocess.check_output(
-        ["linkcheckMarkdown", "-local", p], universal_newlines=True
-    )
-    if stdout:
-        print(stdout)
+    out = subprocess.check_output(["linkcheckMarkdown", "-local", p], text=True)
+    if out:
+        print(out)
         ok = False
 
 if not ok:

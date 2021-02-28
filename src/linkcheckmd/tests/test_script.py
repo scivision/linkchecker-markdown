@@ -24,7 +24,7 @@ def test_mod(use_async):
 
 
 @pytest.mark.parametrize("use_async", [True, False])
-def test_script(use_async):
+def test_script(use_async, capfd):
 
     args = []
     if not use_async:
@@ -32,7 +32,7 @@ def test_script(use_async):
         args.append("--sync")
 
     with importlib.resources.path("linkcheckmd.tests", "badlink.md") as file:
-        ret = subprocess.check_output(
-            ["linkcheckMarkdown", str(file), "github.invalid"] + args, text=True
-        )
-    assert "github.invalid" in ret
+        ret = subprocess.run(["linkcheckMarkdown", str(file), "github.invalid"] + args, text=True)
+
+    assert ret.returncode == 22
+    assert "github.invalid" in capfd.readouterr().out

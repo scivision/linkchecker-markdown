@@ -39,7 +39,7 @@ def main():
         logging.basicConfig(level=logging.INFO)
 
     tic = time.monotonic()
-    check_links(
+    bad = check_links(
         P.path,
         ext=P.ext,
         domain=P.domain,
@@ -50,6 +50,11 @@ def main():
     )
 
     print(f"{time.monotonic() - tic:0.3} seconds to check links")
+
+    if bad:
+        # using 22 following cURL
+        # https://everything.curl.dev/usingcurl/returns
+        raise SystemExit(22)
 
 
 if __name__ == "__main__":

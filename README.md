@@ -29,7 +29,19 @@ pip install -e linkchecker-markdown
 
 ## Usage
 
-The static site generator does NOT have to be running for these tests--it looks at the .md files directly.
+The static site generator does NOT have to be running for these tests.
+This program looks at the Markdown .md files directly.
+
+If any local or remote links are determined to be missing, the following happens:
+
+* the file containing the bad link and the link is printed to "stdout"
+* the program will exit with code 22 instead of 0 after all files are checked
+
+The bad links are printed to stdout since the normal operation of this program is to check for errors.
+Due to the fast, concurrent checking and numerous pages checked, there may be diagnostics printed to stderr.
+That way library error messages can be kept separate from the missing page locations printed on stdout.
+
+
 The examples assume webpage Markdown files have top-level directory ~/web.
 *If using the linkchecker on an MkDocs documentation project, Markdown files
 are typically found in a `~/docs` directory.*

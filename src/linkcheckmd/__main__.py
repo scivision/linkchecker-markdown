@@ -30,7 +30,7 @@ def main():
         help="head is faster but gives false positives. Get is reliable but slower",
         default="get",
     )
-    p.add_argument("-h", "--headers", help="add custom headers dictionary", type=json.loads)
+    p.add_argument("--headers", help="add custom headers dictionary", type=json.loads)
     p.add_argument("-v", "--verbose", action="store_true")
     p.add_argument("--sync", help="don't use asyncio", action="store_true")
     p.add_argument("-local", help="only check local files", action="store_true")

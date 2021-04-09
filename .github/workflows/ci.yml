@@ -16,6 +16,9 @@ jobs:
       with:
         python-version: '3.x'
 
+    - name: Pre-commit autoupdate
+      uses: browniebroke/pre-commit-autoupdate-action@v1.0.0
+
     - run: pip install .[tests,lint]
 
     - run: flake8

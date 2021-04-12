@@ -1,5 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
+import collections.abc
 import typing as T
 import logging
 import re
@@ -13,7 +14,7 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:64.0) Gecko/20100101 Firefo
 
 
 def check_links(
-    path: Path,
+    path: T.Union[Path, T.List[Path]],
     domain: str = None,
     *,
     ext: str,
@@ -23,6 +24,22 @@ def check_links(
     local: bool = False,
     recurse: bool = False,
 ) -> T.Iterable[tuple]:
+
+    if not isinstance(path, str) and isinstance(path, collections.abc.Iterable):
+        bad = []
+        for p in path:
+            b = check_links(
+                path=p,
+                domain=domain,
+                ext=ext,
+                hdr=hdr,
+                method=method,
+                use_async=use_async,
+                local=local,
+                recurse=recurse,
+            )
+            bad.extend(b)
+        return bad
 
     if local and recurse:
         logging.error("'recurse' currently works only for remote links.")

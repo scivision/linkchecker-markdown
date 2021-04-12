@@ -15,13 +15,14 @@ from .base import check_links
 
 def main():
     p = argparse.ArgumentParser(description="check links in markdown sites")
-    p.add_argument("path", help="path to Markdown files")
+    p.add_argument("path", help="path(s) to Markdown files", nargs="*")
     p.add_argument(
-        "domain",
+        "-d",
+        "--domain",
         help="check only links to this domain (say github.com without https etc.)",
-        nargs="?",
+        default=None,
     )
-    p.add_argument("-ext", help="file extension to scan", default=".md")
+    p.add_argument("-e", "--ext", help="file extension to scan", default=".md")
     p.add_argument(
         "-m",
         "--method",

@@ -14,7 +14,7 @@ from . import files
 
 # tuples, not lists
 
-CWD = os.getcwd()
+CWD = os.path.abspath(os.getcwd())
 EXC = (
     aiohttp.client_exceptions.ClientConnectorError,
     aiohttp.client_exceptions.ServerDisconnectedError,
@@ -58,7 +58,7 @@ async def check_url(
     bad: list[tuple[str, str, T.Any]] = []
 
     timeout = aiohttp.ClientTimeout(total=TIMEOUT)
-    rel_path = os.path.relpath(os.path.abspath(str(fn)), start=os.path.abspath(CWD))
+    rel_path = os.path.relpath(os.path.abspath(str(fn)), start=CWD)
 
     for url in urls:
         if ext == ".md":

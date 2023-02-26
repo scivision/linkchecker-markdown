@@ -62,7 +62,9 @@ async def check_url(
             url = url[1:-1]
         try:
             # anti-crawling behavior doesn't like .head() method--.get() is slower but avoids lots of false positives
-            async with aiohttp.ClientSession(headers=hdr, timeout=timeout) as session:
+            async with aiohttp.ClientSession(headers=hdr,
+                                             timeout=timeout,
+                                             connector=aiohttp.TCPConnector(ssl=False)) as session:
                 if method == "get":
                     async with session.get(url, allow_redirects=True) as response:
                         code = response.status

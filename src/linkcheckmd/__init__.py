@@ -1,8 +1,5 @@
-import os
-import asyncio
+__version__ = "1.5.0"
 
 from .base import check_links, check_local, check_remotes
 
-if os.name == "nt":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())  # type: ignore
-# type ignore needed for non-windows mypy
+__all__ = ["check_links", "check_local", "check_remotes"]

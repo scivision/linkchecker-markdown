@@ -1,8 +1,39 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linkcheckmdmd"
+description = "Check links for Markdown-based site"
+keywords = ["hugo", "jekyll", "markdown", "linkcheck"]
+classifiers = ["Development Status :: 5 - Production/Stable",
+ "Environment :: Console",
+ "Framework :: AsyncIO",
+ "Operating System :: OS Independent",
+ "Programming Language :: Python :: 3",
+ "Topic :: Internet :: WWW/HTTP :: Site Management :: Link Checking"
+]
+requires-python = ">=3.8"
+dynamic = ["version", "readme"]
+dependencies = ["aiohttp"]
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"], content-type = "text/markdown"}
+version = {attr = "linkcheckmd.__version__"}
+
+[project.optional-dependencies]
+tests = ["pytest"]
+lint = ["flake8", "flake8-bugbear", "flake8-builtins", "flake8-blind-except", "mypy",
+"types-requests"]
+full = ["requests"]
 
 [tool.black]
 line-length = 100
 
-[tool.pytest.ini_options]
-addopts = "-ra -v"
+[tool.mypy]
+files = ["src"]
+
+ignore_missing_imports = true
+strict_optional = false
+show_column_numbers = true
+allow_redefinition = true

@@ -1,5 +1,6 @@
 import subprocess
 import pytest
+import sys
 import importlib.resources
 
 import linkcheckmd as lc
@@ -32,7 +33,7 @@ def test_script(use_async, capfd):
         args.append("--sync")
 
     with importlib.resources.path("linkcheckmd.tests", "badlink.md") as file:
-        ret = subprocess.run(["linkcheckMarkdown", str(file), "github.invalid"] + args, text=True)
+        ret = subprocess.run([sys.executable, "-m", "linkcheckmd", str(file), "github.invalid"] + args, text=True)
 
     assert ret.returncode == 22
     assert "github.invalid" in capfd.readouterr().out

@@ -28,11 +28,15 @@ async def check_urls(
     hdr: dict[str, str] = None,
     method: str = "get",
     recurse: bool = False,
+    ssl_verify: bool = True,
 ) -> list[tuple[str, str, T.Any]]:
 
     glob = re.compile(regex)
 
-    tasks = [check_url(fn, glob, ext, hdr, method=method) for fn in files.get(path, ext, recurse)]
+    tasks = [
+        check_url(fn, glob, ext, hdr, method=method, ssl_verify=ssl_verify)
+        for fn in files.get(path, ext, recurse)
+    ]
 
     warnings.simplefilter("ignore")
 
@@ -48,7 +52,13 @@ async def check_urls(
 
 
 async def check_url(
-    fn: Path, glob, ext: str, hdr: dict[str, str] = None, *, method: str = "get"
+    fn: Path,
+    glob,
+    ext: str,
+    hdr: dict[str, str] = None,
+    *,
+    method: str = "get",
+    ssl_verify: bool = True,
 ) -> list[tuple[str, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
@@ -62,7 +72,9 @@ async def check_url(
             url = url[1:-1]
         try:
             # anti-crawling behavior doesn't like .head() method--.get() is slower but avoids lots of false positives
-            async with aiohttp.ClientSession(headers=hdr, timeout=timeout) as session:
+            async with aiohttp.ClientSession(
+                headers=hdr, timeout=timeout, connector=aiohttp.TCPConnector(ssl=ssl_verify)
+            ) as session:
                 if method == "get":
                     async with session.get(url, allow_redirects=True) as response:
                         code = response.status

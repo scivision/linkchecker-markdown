@@ -25,7 +25,7 @@ def check_urls(
     regex: str,
     ext: str = ".md",
     hdr: dict[str, str] = None,
-    verifycert: bool = False,
+    ssl_verify: bool = False,
     recurse: bool = False,
 ) -> list[tuple[str, str, T.Any]]:
 
@@ -41,7 +41,7 @@ def check_urls(
             sess.max_redirects = 5
         # %% loop
         for fn in files.get(path, ext, recurse):
-            for bad in check_url(fn, glob, ext, sess, hdr, verifycert):
+            for bad in check_url(fn, glob, ext, sess, hdr, ssl_verify):
                 print("\n", bad)
                 bads.append(bad)
 
@@ -51,7 +51,7 @@ def check_urls(
 
 
 def check_url(
-    fn: Path, glob, ext: str, sess, hdr: dict[str, str] = None, verifycert: bool = False
+    fn: Path, glob, ext: str, sess, hdr: dict[str, str] = None, ssl_verify: bool = False
 ) -> T.Iterable[tuple[str, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
@@ -60,9 +60,9 @@ def check_url(
         if ext == ".md":
             url = url[1:-1]
         try:
-            R = sess.head(url, allow_redirects=True, timeout=TIMEOUT, verify=verifycert)
+            R = sess.head(url, allow_redirects=True, timeout=TIMEOUT, verify=ssl_verify)
             if R.status_code in RETRYCODES:
-                if retry(url, hdr, verifycert):
+                if retry(url, hdr, ssl_verify):
                     continue
                 else:
                     yield fn.name, url, R.status_code
@@ -70,7 +70,7 @@ def check_url(
         except OKE:
             continue
         except EXC as e:
-            if retry(url, hdr, verifycert):
+            if retry(url, hdr, ssl_verify):
                 continue
             yield fn.name, url, str(e)
             continue
@@ -82,13 +82,13 @@ def check_url(
             logging.info(f"OK: {url:80s}")
 
 
-def retry(url: str, hdr: dict[str, str] = None, verifycert: bool = False) -> bool:
+def retry(url: str, hdr: dict[str, str] = None, ssl_verify: bool = False) -> bool:
     ok = False
 
     try:
         # anti-crawling behavior doesn't like .head() method--.get() is slower but avoids lots of false positives
         with requests.get(
-            url, allow_redirects=True, timeout=TIMEOUT, verify=verifycert, headers=hdr, stream=True
+            url, allow_redirects=True, timeout=TIMEOUT, verify=ssl_verify, headers=hdr, stream=True
         ) as stream:
             Rb = next(stream.iter_lines(80), None)
             # if Rb is not None and 'html' in Rb.decode('utf8'):

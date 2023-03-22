@@ -33,6 +33,7 @@ def main():
     p.add_argument("--sync", help="don't use asyncio", action="store_true")
     p.add_argument("-local", help="only check local files", action="store_true")
     p.add_argument("-r", "--recurse", help="recurse directories under path", action="store_true")
+    p.add_argument("-noverify", help="don't verify SSL certificates", action="store_true")
     P = p.parse_args()
 
     if P.verbose:
@@ -47,6 +48,7 @@ def main():
         use_async=not P.sync,
         local=P.local,
         recurse=P.recurse,
+        ssl_verify=not P.noverify,
     )
 
     print(f"{time.monotonic() - tic:0.3} seconds to check links")

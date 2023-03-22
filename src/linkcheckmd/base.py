@@ -22,6 +22,7 @@ def check_links(
     use_async: bool = True,
     local: bool = False,
     recurse: bool = False,
+    ssl_verify: bool = True,
 ) -> T.Iterable[tuple]:
 
     if local and recurse:
@@ -34,7 +35,14 @@ def check_links(
     bad = None
     if not local:
         bad = check_remotes(
-            path, domain, ext=ext, hdr=hdr, method=method, use_async=use_async, recurse=recurse
+            path,
+            domain,
+            ext=ext,
+            hdr=hdr,
+            method=method,
+            use_async=use_async,
+            recurse=recurse,
+            ssl_verify=ssl_verify,
         )
 
     return bad
@@ -85,6 +93,7 @@ def check_remotes(
     method: str = "get",
     use_async: bool = True,
     recurse: bool = False,
+    ssl_verify: bool = True,
 ) -> list[tuple[str, str, T.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
@@ -102,11 +111,19 @@ def check_remotes(
     # %% session
     if use_async:
         urls = asyncio.run(
-            check_urls(path, regex=pat, ext=ext, hdr=hdr, method=method, recurse=recurse)
+            check_urls(
+                path,
+                regex=pat,
+                ext=ext,
+                hdr=hdr,
+                method=method,
+                recurse=recurse,
+                ssl_verify=ssl_verify,
+            )
         )
     else:
         from .sync import check_urls as sync_urls
 
-        urls = sync_urls(path, pat, ext, hdr)
+        urls = sync_urls(path, regex=pat, ext=ext, hdr=hdr, recurse=recurse, ssl_verify=ssl_verify)
 
     return urls

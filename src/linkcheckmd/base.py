@@ -59,6 +59,7 @@ def check_local(path: Path, ext: str) -> T.Iterable[tuple[str, str]]:
     path = Path(path).resolve().expanduser()  # must have .resolve()
 
     for fn in files.get(path, ext):
+        # print(fn)
         urls = glob.findall(fn.read_text(errors="ignore"))
 
         for url in urls:

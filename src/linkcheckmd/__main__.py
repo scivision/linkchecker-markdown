@@ -9,6 +9,7 @@ linkcheckMarkdown ~/myJekyllsite/_posts
 import argparse
 import logging
 import time
+import json
 
 from .base import check_links
 
@@ -29,6 +30,7 @@ def main():
         help="head is faster but gives false positives. Get is reliable but slower",
         default="get",
     )
+    p.add_argument("--headers", help="add custom headers dictionary", type=json.loads)
     p.add_argument("-v", "--verbose", action="store_true")
     p.add_argument("--sync", help="don't use asyncio", action="store_true")
     p.add_argument("-local", help="only check local files", action="store_true")
@@ -45,6 +47,7 @@ def main():
         ext=P.ext,
         domain=P.domain,
         method=P.method,
+        hdr=P.headers,
         use_async=not P.sync,
         local=P.local,
         recurse=P.recurse,

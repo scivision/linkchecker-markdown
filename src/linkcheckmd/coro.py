@@ -82,7 +82,7 @@ async def check_url(
                     async with session.head(url, allow_redirects=True) as response:
                         code = response.status
                 else:
-                    raise ValueError(f"Unknown retreive method {method}")
+                    raise ValueError(f"Unknown retrieve method {method}")
         except OKE:
             continue
         except EXC as e:

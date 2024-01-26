@@ -37,3 +37,10 @@ ignore_missing_imports = true
 strict_optional = false
 show_column_numbers = true
 allow_redefinition = true
+
+[tool.codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = '.git'
+check-hidden = true
+# ignore-regex = ''
+# ignore-words-list = ''

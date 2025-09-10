@@ -81,6 +81,21 @@ python -m linkcheckmd
     python -m linkcheckmd ~/docs
     ```
 
+* Exclude domains from checking
+
+```sh
+python -m linkcheckmd -r ./docs -e example.com -e slow-site.org
+```
+
+The `-e, --exclude` option allows specifying one or more domains to exclude from link checking. This is useful to skip known problematic sites, internal services, or slow external domains. Multiple `-e` options can be used to build the exclusion list.
+
+Observe that URLs from different markdown files are interleaved, showing the asynchronous nature of this program.
+
+```markdown
+# Example usage excluding domains:
+python -m linkcheckmd -r ./docs -e example.com -e slow-site.org -e slow-external-site.com
+```
+
 The `-v` `--verbose` options prints the URLs as they are checked.
 Observe that URLs from different markdown files are interleaved, showing the asynchronous nature of this program.
 

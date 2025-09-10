@@ -23,6 +23,7 @@ def check_links(
     local: bool = False,
     recurse: bool = False,
     ssl_verify: bool = True,
+    exclude_domains: list[str] | None = None,
 ) -> T.Iterable[tuple] | None:
 
     if local and recurse:
@@ -43,6 +44,7 @@ def check_links(
             use_async=use_async,
             recurse=recurse,
             ssl_verify=ssl_verify,
+            exclude_domains=exclude_domains,
         )
 
     return bad
@@ -95,6 +97,7 @@ def check_remotes(
     use_async: bool = True,
     recurse: bool = False,
     ssl_verify: bool = True,
+    exclude_domains: list[str] | None = None,
 ) -> list[tuple[Path, str, T.Any]]:
     if domain:
         pat = "https?://" + domain + r"[=a-zA-Z0-9\_\/\?\&\%\+\#\.\-]*"
@@ -120,13 +123,14 @@ def check_remotes(
                 method=method,
                 recurse=recurse,
                 ssl_verify=ssl_verify,
+                exclude_domains=exclude_domains,
             )
         )
     else:
         from .sync import check_urls as sync_urls
 
         urls = sync_urls(
-            path, regex=pat, ext=ext, hdr=hdr, recurse=recurse, ssl_verify=ssl_verify
+            path, regex=pat, ext=ext, hdr=hdr, recurse=recurse, ssl_verify=ssl_verify, exclude_domains=exclude_domains
         )
 
     return urls

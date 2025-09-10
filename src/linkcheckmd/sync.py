@@ -30,6 +30,7 @@ def check_urls(
     hdr: dict[str, str] | None = None,
     ssl_verify: bool = False,
     recurse: bool = False,
+    exclude_domains: list[str] | None = None,
 ) -> list[tuple[Path, str, T.Any]]:
 
     bads: list[tuple[Path, str, T.Any]] = []
@@ -44,7 +45,7 @@ def check_urls(
             sess.max_redirects = 5
         # %% loop
         for fn in files.get(path, ext, recurse):
-            for bad in check_url(fn, glob, ext, sess, hdr, ssl_verify):
+            for bad in check_url(fn, glob, ext, sess, hdr, ssl_verify, exclude_domains):
                 print("\n", bad[0], bad[1], bad[2])
                 bads.append(bad)
 
@@ -60,6 +61,7 @@ def check_url(
     sess,
     hdr: dict[str, str] | None = None,
     ssl_verify: bool = False,
+    exclude_domains: list[str] | None = None,
 ) -> T.Iterable[tuple[Path, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
@@ -67,6 +69,16 @@ def check_url(
     for url in urls:
         if ext == ".md":
             url = url[1:-1]
+        
+        # Skip URLs that contain excluded domains
+        if exclude_domains:
+            should_skip = False
+            for domain in exclude_domains:
+                if domain.lower() in url.lower():
+                    should_skip = True
+                    break
+            if should_skip:
+                continue
         try:
             R = sess.head(url, allow_redirects=True, timeout=TIMEOUT, verify=ssl_verify)
             if R.status_code in RETRYCODES:

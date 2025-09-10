@@ -29,12 +29,13 @@ async def check_urls(
     method: str = "get",
     recurse: bool = False,
     ssl_verify: bool = True,
+    exclude_domains: list[str] | None = None,
 ) -> list[tuple[Path, str, T.Any]]:
 
     glob = re.compile(regex)
 
     tasks = [
-        check_url(fn, glob, ext, hdr, method=method, ssl_verify=ssl_verify)
+        check_url(fn, glob, ext, hdr, method=method, ssl_verify=ssl_verify, exclude_domains=exclude_domains)
         for fn in files.get(path, ext, recurse)
     ]
 
@@ -59,6 +60,7 @@ async def check_url(
     *,
     method: str = "get",
     ssl_verify: bool = True,
+    exclude_domains: list[str] | None = None,
 ) -> list[tuple[Path, str, T.Any]]:
 
     urls = glob.findall(fn.read_text(errors="ignore"))
@@ -70,6 +72,16 @@ async def check_url(
     for url in urls:
         if ext == ".md":
             url = url[1:-1]
+        
+        # Skip URLs that contain excluded domains
+        if exclude_domains:
+            should_skip = False
+            for domain in exclude_domains:
+                if domain.lower() in url.lower():
+                    should_skip = True
+                    break
+            if should_skip:
+                continue
         try:
             # anti-crawling behavior doesn't like .head() method--.get() is slower but avoids lots of false positives
             async with aiohttp.ClientSession(

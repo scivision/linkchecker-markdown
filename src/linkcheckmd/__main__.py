@@ -38,6 +38,9 @@ def main():
         "-r", "--recurse", help="recurse directories under path", action="store_true"
     )
     p.add_argument("-noverify", help="don't verify SSL certificates", action="store_true")
+    p.add_argument(
+        "-e", "--exclude", help="exclude domains from checking", action="append", default=[]
+    )
     P = p.parse_args()
 
     if P.verbose:
@@ -54,6 +57,7 @@ def main():
         local=P.local,
         recurse=P.recurse,
         ssl_verify=not P.noverify,
+        exclude_domains=P.exclude,
     )
 
     print(f"{time.monotonic() - tic:0.3} seconds to check links")

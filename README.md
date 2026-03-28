@@ -89,13 +89,41 @@ Observe that URLs from different markdown files are interleaved, showing the asy
 For benchmarking and reference, we include a synchronous Requests-based method.
 For a website with 100+ pages, compare times of:
 
-### Git precommit
+### Git pre-commit hook
 
-See
-[./examples/pre-commit](./examples/pre-commit)
-script for a
-[Git hook pre-commit](https://www.scivision.dev/git-markdown-pre-commit-linkcheck)
-Python script.
+There are two ways to run linkchecker-markdown as a pre-commit hook.
+
+#### Using the [pre-commit](https://pre-commit.com/) framework
+
+Add the following to your `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+-   repo: https://github.com/scivision/linkchecker-markdown
+    rev: v1.x  # replace with the desired version tag
+    hooks:
+    -   id: linkcheckmd
+```
+
+Then install the hook:
+
+```sh
+pre-commit install
+```
+
+The hook runs `linkcheckMarkdown` on all staged Markdown files before each commit.
+
+#### Using a plain Git hook script
+
+Copy [./examples/pre-commit](./examples/pre-commit) to `.git/hooks/pre-commit` and make it executable:
+
+```sh
+cp examples/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+```
+
+Edit the directory list in the script to match your project layout (e.g. `content/posts` for Hugo, `docs` for MkDocs).
+The script exits non-zero and prints the offending links if any broken local links are found, blocking the commit.
 
 ### Tox and CI
 

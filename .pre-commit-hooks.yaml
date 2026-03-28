@@ -1,0 +1,7 @@
+-   id: linkcheckmd
+    name: linkcheckmd
+    description: Automatically upgrade syntax for newer versions.
+    entry: linkcheckMarkdown
+    language: python
+    language_version: python3
+    types: [markdown]
